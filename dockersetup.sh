@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Function to execute commands with optional sudo
 run_command() {
     if [ -x "$(command -v sudo)" ]; then
