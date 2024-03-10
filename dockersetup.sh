@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# Function for printing colored section headings
-print_colored_section_header() {
-    echo
-    echo -e "\e[1;34m#############################################\e[0m"
-    echo
-    echo -e "\e[1;34m  $1\e[0m"
-    echo
-    echo -e "\e[1;34m#############################################\e[0m"
-
-    echo
-}
-
 # Function to execute commands with optional sudo
 run_command() {
     if [ -x "$(command -v sudo)" ]; then
@@ -50,7 +38,7 @@ EOF
 
 displayupdate() {
 cat <<EOF
-==========================================================================          
+==========================================================================
     _____            __                    __  __          __      __     
    / ___/__  _______/ /____  ____ ___     / / / /___  ____/ /___ _/ /____ 
    \__ \/ / / / ___/ __/ _ \/ __  __ \   / / / / __ \/ __  / __  / __/ _ \ 
@@ -189,7 +177,8 @@ install_portainer() {
     clear
     displaydocker
     echo
-    print_colored_section_header "Install Portainer..."
+    echo " >> Install Portainer... <<"
+    echo
     run_command docker volume create portainer_data
     run_command docker run -d -p 9000:9000 --hostname=portainer --name=portainer --restart=always \
         -v /var/run/docker.sock:/var/run/docker.sock \
@@ -207,9 +196,10 @@ install_portainer() {
 install_adguard_home() {
 
     clear
-    displaydocker
-    echo    
-    print_colored_section_header "Install Adguard Home..."
+    displaydocker    
+    echo
+    echo " >> Install Adguard Home... <<"
+    echo
     run_command docker volume create adguardhome_data
     run_command docker run -d --hostname=adguardhome --name=adguardhome --restart=always \
         -v adguardhome_data:/opt/adguardhome/conf \
@@ -232,8 +222,9 @@ install_uptime_kuma() {
 
     clear
     displaydocker
-    echo    
-    print_colored_section_header "Install Uptime Kuma..."
+    echo
+    echo " >> Install Uptime Kuma... <<"
+    echo 
     run_command docker volume create uptimekuma_data
     run_command docker run -d --hostname=uptimekuma --name=uptimekuma --restart=always \
         -v uptimekuma_data:/app/data \
@@ -252,8 +243,9 @@ install_watchtower() {
 
     clear
     displaydocker
-    echo    
-    print_colored_section_header "Install Watchtower..."
+    echo
+    echo " >> Install Watchtower... <<"
+    echo
     run_command docker run -d --hostname=watchtower --name=watchtower --restart=always \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /etc/localtime:/etc/localtime:ro \
@@ -281,8 +273,8 @@ install_grafana_stack() {
 
     clear
     displaydocker
-    echo   
-    print_colored_section_header "Install Grafana..."
+    echo
+    echo " >> Install Grafana... <<"
     echo
 
     run_command mkdir -p /etc/prometheus/
@@ -322,9 +314,9 @@ EOL
 
     clear
     displaydocker
-    echo   
-    print_colored_section_header "Install Grafana..."
     echo
+    echo " >> Install Grafana... <<"
+    echo 
     read -p "Would you like to install the fritzbox-prometheus-exporter as well? (Y/N): " install_fritzbox_exporter
 
     if [ "$install_fritzbox_exporter" == "y" ]; then
@@ -366,8 +358,8 @@ install_iventoy(){
     clear
     displaydocker
     echo
-    print_colored_section_header "Installiere iventoy"
-    echo
+    echo " >> Install iVentoy... <<"
+    echo 
 
     local_network=$(ip route | grep -oP 'src \K\S+' | head -n 1 | cut -d "." -f 1,2,3) 
 
@@ -397,7 +389,8 @@ install_heimdall() {
     clear
     displaydocker
     echo
-    print_colored_section_header "Installiere Heimdall"
+    echo " >> Install Heimdall... <<"
+    echo 
     run_command docker volume create heimdall_data
     run_command docker run -d --hostname=heimdall --name=heimdall --restart=always \
         -v /heimdall/config:/app/config \
