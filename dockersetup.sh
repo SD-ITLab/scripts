@@ -306,7 +306,7 @@ EOL
         -v grafana-data:/var/lib/grafana \
         grafana/grafana:latest
 		
-    run_command docker run -d --hostname=node_exporter --name=node_exporter --network=grafana_network --restart=unless-stopped \
+    run_command docker run -d -p 9100:9100  --hostname=node_exporter --name=node_exporter --network=grafana_network --restart=unless-stopped \
 		--pid=host \
         -v /:/host:ro,rslave \
         quay.io/prometheus/node-exporter:v1.5.0 --path.rootfs=/host
@@ -370,7 +370,7 @@ install_iventoy(){
     ufw allow from $local_network.0/24 to any port 10809
     run_command docker run -d --hostname=iventoy --name=iventoy --restart=always \
         --privileged \
-        --network=host
+        --network=host \
         -v /home/iventoy/iso:/app/iso \
         -v /home/iventoy/log:/app/log \
         -v /home/iventoy/user:/app/user \
@@ -392,10 +392,10 @@ install_heimdall() {
     echo 
     run_command docker volume create heimdall_data
     run_command docker run -d --hostname=heimdall --name=heimdall --restart=always \
-        -v /heimdall/config:/app/config \
+        -v /heimdall_data:/config \
         -p 8080:80 \
         linuxserver/heimdall:latest
-        clear
+    clear
     displaydocker
     echo
     echo -e "   heimdall can now be reached at the following address > \e[32mhttp://$(get_ip_address):8080\e[0m"
