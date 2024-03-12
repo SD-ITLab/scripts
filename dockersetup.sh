@@ -293,9 +293,9 @@ scrape_configs:
 EOL
 
 
-	run_command docker network create grafana_network
+    run_command docker network create grafana_network
 	
-	run_command docker volume create prometheus_data
+    run_command docker volume create prometheus_data
     run_command docker run -d -p 9090:9090 --hostname=prometheus --name=prometheus --network=grafana_network --restart=unless-stopped \
         -v /etc/prometheus:/etc/prometheus \
         -v prometheus_data:/prometheus \
@@ -305,9 +305,9 @@ EOL
     run_command docker run -d -p 3000:3000 --hostname=grafana --name=grafana --network=grafana_network --restart=unless-stopped \
         -v grafana-data:/var/lib/grafana \
         grafana/grafana:latest
-		
+
     run_command docker run -d -p 9100:9100  --hostname=node_exporter --name=node_exporter --network=grafana_network --restart=unless-stopped \
-		--pid=host \
+        --pid=host \
         -v /:/host:ro,rslave \
         quay.io/prometheus/node-exporter:v1.5.0 --path.rootfs=/host
 
