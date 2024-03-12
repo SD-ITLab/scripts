@@ -360,14 +360,14 @@ install_iventoy(){
     echo " >> Install iVentoy... <<"
     echo 
 
-    local_network=$(ip route | grep -oP 'src \K\S+' | head -n 1 | cut -d "." -f 1,2,3) 
+    local_network=$(echo $(get_ip_address) | cut -d"." -f1,2,3)".0"
 
-    ufw allow from $local_network.0/24 to any port 67
-    ufw allow from $local_network.0/24 to any port 68
-    ufw allow from $local_network.0/24 to any port 69
-    ufw allow from $local_network.0/24 to any port 26000
-    ufw allow from $local_network.0/24 to any port 16000
-    ufw allow from $local_network.0/24 to any port 10809
+    ufw allow from $local_network/24 to any port 67
+    ufw allow from $local_network/24 to any port 68
+    ufw allow from $local_network/24 to any port 69
+    ufw allow from $local_network/24 to any port 26000
+    ufw allow from $local_network/24 to any port 16000  
+    ufw allow from $local_network/24 to any port 10809
     run_command docker run -d --hostname=iventoy --name=iventoy --restart=always \
         --privileged \
         --network=host \
