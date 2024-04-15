@@ -8,6 +8,15 @@ run_command() {
     fi
 }
 
+# Detect the operating system
+if [ -f "/etc/os-release" ]; then
+    . /etc/os-release
+    OS=$ID
+else
+    echo "Error: Unable to detect the operating system."
+    exit 1
+fi
+
 color_echo() {
     local color_code=$1
     shift
@@ -75,8 +84,29 @@ docker_setup() {
     displaydocker
     echo
 
-    run_command apt-get install -y docker.io
-    run_command apt-get install -y docker-compose
+    # Install dependencies
+    run_command apt-get install -y ca-certificates curl
+
+    # Create directory for keyrings
+    run_command install -m 0755 -d /etc/apt/keyrings
+
+    # Download Docker's GPG key
+    run_command curl -fsSL https://download.docker.com/linux/$OS/gpg -o /etc/apt/keyrings/docker.asc
+
+    # Adjust permissions for the GPG key
+    run_command chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add Docker repository to Apt sources
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$OS \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  run_command tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Update Apt repositories
+    run_command apt-get update
+
+    # Install Docker packages
+    run_command apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     run_command service docker stop
 
     # Check if /etc/docker directory exists
