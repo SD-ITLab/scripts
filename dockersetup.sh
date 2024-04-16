@@ -1,4 +1,16 @@
 #!/bin/bash
+# Function for printing colored section headings
+print_colored_section_header() {
+    echo
+    echo -e "\e[1;34m#############################################\e[0m"
+    echo
+    echo -e "\e[1;34m  $1\e[0m"
+    echo
+    echo -e "\e[1;34m#############################################\e[0m"
+
+    echo
+}
+
 # Function to execute commands with optional sudo
 run_command() {
     if [ -x "$(command -v sudo)" ]; then
@@ -31,30 +43,37 @@ get_ip_address() {
 }
 
 displaydocker() {
-cat <<EOF
-==========================================================================
-        ____             __                _____      __                
-       / __ \____  _____/ /_____  _____   / ___/___  / /___  ______     
-      / / / / __ \/ ___/ //_/ _ \/ ___/   \__ \/ _ \/ __/ / / / __ \    
-     / /_/ / /_/ / /__/ ,< /  __/ /      ___/ /  __/ /_/ /_/ / /_/ /    
-    /_____/\____/\___/_/|_|\___/_/      /____/\___/\__/\__,_/ .___/     
-                                                           /_/   
-                           Created by: sd-itlab
-==========================================================================
-EOF
+colorred="\033[31m"
+colorpowder_blue="\033[1;36m" #with bold
+colorblue="\033[34m"
+colornormal="\033[0m"
+colorwhite="\033[97m"
+colorlightgrey="\033[90m"
+echo
+printf "               ${colorred} ##       ${colorpowder_blue} .\n"
+printf "         ${colornormal}${colorred} ## ## ##      ${colorpowder_blue} ==       ${colorpowder_blue} _____   ____   _____ _  ________ _____  \n"
+printf "       ${colornormal}${colorred}## ## ## ##      ${colorpowder_blue}===       ${colorpowder_blue}|  __ \ / __ \ / ____| |/ /  ____|  __ \ \n"
+printf "   /\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\\\___/ ===     ${colorpowder_blue}| |  | | |  | | |    | ' /| |__  | |__) |\n"
+printf "  ${colorpowder_blue}{${colorblue}                      ${colorpowder_blue}/  ===-  ${colorpowder_blue}| |  | | |  | | |    |  < |  __| |  _  / \n"
+printf "   \\\______${colorwhite} o ${colorpowder_blue}         __/         | |__| | |__| | |____| . \| |____| | \ \ \n"
+printf "     \\\    \\\        __/            ${colorpowder_blue}|_____/ \____/ \_____|_|\_\______|_|  \_\ \n"
+printf "      \\\____\\\______/ \n${colornormal}"
+printf "                                                        ${colorred}Created by: sd-itlab\n"
+printf "${colornormal}============================================================================="
+echo
 }
 
 displayupdate() {
 cat <<EOF
-==========================================================================
-    _____            __                    __  __          __      __     
-   / ___/__  _______/ /____  ____ ___     / / / /___  ____/ /___ _/ /____ 
-   \__ \/ / / / ___/ __/ _ \/ __  __ \   / / / / __ \/ __  / __  / __/ _ \ 
-  ___/ / /_/ (__  ) /_/  __/ / / / / /  / /_/ / /_/ / /_/ / /_/ / /_/  __/
- /____/\__  /____/\__/\___/_/ /_/ /_/   \____/  ___/\____/\____/\__/\___/ 
-      /____/                                /_/                  
-                           Created by: sd-itlab
-==========================================================================
+=============================================================================
+     _____            __                    __  __          __      __     
+    / ___/__  _______/ /____  ____ ___     / / / /___  ____/ /___ _/ /____ 
+    \__ \/ / / / ___/ __/ _ \/ __  __ \   / / / / __ \/ __  / __  / __/ _ \ 
+   ___/ / /_/ (__  ) /_/  __/ / / / / /  / /_/ / /_/ / /_/ / /_/ / /_/  __/
+  /____/\__  /____/\__/\___/_/ /_/ /_/   \____/  ___/\____/\____/\__/\___/ 
+       /____/                                /_/                  
+                            Created by: sd-itlab
+=============================================================================
 EOF
 }
 
@@ -70,7 +89,7 @@ sys_update() {
     clear
     displayupdate
     echo
-    color_echo 32 "   System has been updated and brought up to date."
+    color_echo 32 "   System has been updated and is now up-to-date."
     echo
 }
 
@@ -107,7 +126,7 @@ echo \
 
     # Install Docker packages
     run_command apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    run_command service docker stop
+    systemctl stop docker
 
     # Check if /etc/docker directory exists
     if [ ! -d "/etc/docker" ]; then
@@ -117,7 +136,7 @@ echo \
     # Check if /etc/docker/daemon.json exists
     if [ ! -e "/etc/docker/daemon.json" ]; then
     # Change docker directory for more space
-cat << EOL > /etc/docker/daemon.json
+cat <<EOL > /etc/docker/daemon.json
 {
    "data-root": "/home/docker"
 }
@@ -135,11 +154,13 @@ EOL
         rm -rf /var/lib/docker
     fi
 
-    run_command service docker start
+    systemctl start docker
     clear
     displaydocker
     echo
-    color_echo 32 "   Installation of Docker and Docker-Compose completed"
+    color_echo 32 "   Installation of Docker and Docker-Compose completed."
+    color_echo 32 "   Information: Default-Directory was changed to [/home/docker],"
+    color_echo 32 "                for more storage capacity."
     echo
 }
 
@@ -149,35 +170,26 @@ EOL
 ###############                            Dockerapps - installation                             ###############
 ################################################################################################################
 app_menu() {
-    # Function for managing users
+    # Function for installing apps
     while true; do
 
         clear
         displaydocker
         # Show menu options
         echo
-        echo -e "\e[1;33m   [1] Portainer\e[0m          [Dashboard for Docker-Containers]"     
+        echo -e "\e[1;33m   [\033[1;36m1\e[1;33m] Portainer\e[0m              [Dashboard for docker containers]"     
+        echo -e "\e[1;33m   [\033[1;36m2\e[1;33m] Adguard Home\e[0m           [Network-wide ad & tracker blocker]"
+        echo -e "\e[1;33m   [\033[1;36m3\e[1;33m] Uptime Kuma\e[0m            [Uptime-monitoring]"
+        echo -e "\e[1;33m   [\033[1;36m4\e[1;33m] Watchtower\e[0m             [Automatic updating of docker containers]"
+        echo -e "\e[1;33m   [\033[1;36m5\e[1;33m] Grafana_Stack\e[0m          [Data visualization]"
+        echo -e "\e[1;33m   [\033[1;36m6\e[1;33m] Nginx-Proxy-Manager\e[0m    [Reverse proxy with LetsEncrypt]"
+        echo -e "\e[1;33m   [\033[1;36m7\e[1;33m] Heimdall\e[0m               [Dashboards for Favorites]"
         echo
-        echo -e "\e[1;33m   [2] Adguard Home\e[0m       [Network-Adblocker]"
-        echo
-        echo -e "\e[1;33m   [3] Uptime Kuma\e[0m        [Uptime-Monitoring]"
-        echo
-        echo -e "\e[1;33m   [4] Watchtower\e[0m         [Autoupdate of Docker-Containers]"
-        echo
-        echo -e "\e[1;33m   [5] Grafana_Stack\e[0m      [Data visualization]"
-        echo
-        echo -e "\e[1;33m   [6] iVentoy\e[0m            [PXE-Server]"
-        echo
-        echo -e "\e[1;33m   [7] Heimdall\e[0m           [Custom-Dashboards for Favorites]"
-        echo
-        echo
-        echo -e "\e[1;33m   [8] Return to the main menu\e[0m"
-        echo
-        echo "=========================================================================="
+        echo "============================================================================="
         echo
 
         # Query user input
-        read -p "   Please select an option (1-8): " user_choice
+        read -p "   Please select an option (1-8) or Quit (Q): " user_choice
 
         # Process menu options
         case $user_choice in
@@ -186,9 +198,9 @@ app_menu() {
             3) install_uptime_kuma ;;
             4) install_watchtower ;;
             5) install_grafana_stack ;;
-            6) install_iventoy ;;
+            6) install_npm ;;
             7) install_heimdall ;;
-            8) return ;;
+            Q|q) return ;;
             *) echo "Invalid option. Please select again." ;;
         esac
     done
@@ -206,8 +218,7 @@ install_portainer() {
     clear
     displaydocker
     echo
-    echo " >> Install Portainer... <<"
-    echo
+    print_colored_section_header "Install Portainer..."
     run_command docker volume create portainer_data
     run_command docker run -d -p 9000:9000 --hostname=portainer --name=portainer --restart=always \
         -v /var/run/docker.sock:/var/run/docker.sock \
@@ -216,19 +227,19 @@ install_portainer() {
     clear
     displaydocker
     echo
-    echo -e "   Portainer can now be reached at the following address > \e[32mhttp://$(get_ip_address):9000\e[0m"
+    echo -e "   Portainer can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):9000\e[0m"
     echo
-    read -p "Press Enter to return to the menu."        
+    read -p "   Press Enter to return to the menu."
 }
 
 # function to install Adguard Home
 install_adguard_home() {
 
     clear
-    displaydocker    
-    echo
-    echo " >> Install Adguard Home... <<"
-    echo
+    displaydocker
+    echo    
+    print_colored_section_header "Install Adguard Home..."
     run_command docker volume create adguardhome_data
     run_command docker run -d --hostname=adguardhome --name=adguardhome --restart=always \
         -v adguardhome_data:/opt/adguardhome/conf \
@@ -241,9 +252,11 @@ install_adguard_home() {
     clear
     displaydocker
     echo
-    echo -e "   Adguard can now be reached at the following address > \e[32mhttp://$(get_ip_address):33000\e[0m / \e[32mhttp://$(get_ip_address):30080\e[0m"
+    echo -e "   Adguard can now be reached at the following address > "
+    echo -e "   For first setup use: \e[32mhttp://$(get_ip_address):33000\e[0m"
+    echo -e "   After setup use: \e[32mhttp://$(get_ip_address):30080\e[0m"
     echo
-    read -p "Press Enter to return to the menu."        
+    read -p "   Press Enter to return to the menu."        
 }
 
 # function to install Uptime Kuma
@@ -251,9 +264,8 @@ install_uptime_kuma() {
 
     clear
     displaydocker
-    echo
-    echo " >> Install Uptime Kuma... <<"
-    echo 
+    echo    
+    print_colored_section_header "Install Uptime Kuma..."
     run_command docker volume create uptimekuma_data
     run_command docker run -d --hostname=uptimekuma --name=uptimekuma --restart=always \
         -v uptimekuma_data:/app/data \
@@ -262,9 +274,10 @@ install_uptime_kuma() {
     clear
     displaydocker
     echo
-    echo -e "   Uptime Kuma can now be reached at the following address > \e[32mhttp://$(get_ip_address):3001\e[0m"
+    echo -e "   Uptime Kuma can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):3001\e[0m"
     echo
-    read -p "Press Enter to return to the menu."    
+    read -p "   Press Enter to return to the menu."    
 }
 
 # function to install Watchtower
@@ -272,9 +285,8 @@ install_watchtower() {
 
     clear
     displaydocker
-    echo
-    echo " >> Install Watchtower... <<"
-    echo
+    echo    
+    print_colored_section_header "Install Watchtower..."
     run_command docker run -d --hostname=watchtower --name=watchtower --restart=always \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /etc/localtime:/etc/localtime:ro \
@@ -294,7 +306,7 @@ install_watchtower() {
     echo
     echo -e "   watchtower are now running"
     echo
-    read -p "Press Enter to return to the menu."    
+    read -p "   Press Enter to return to the menu."    
 }
 
 # Function to install Grafana and Node-exporter
@@ -303,7 +315,7 @@ install_grafana_stack() {
     clear
     displaydocker
     echo
-    echo " >> Install Grafana... <<"
+    print_colored_section_header "Install Grafana..."
     echo
 
     run_command mkdir -p /etc/prometheus/
@@ -313,48 +325,51 @@ global:
 
 scrape_configs:
   - job_name: 'prometheus'
-    scrape_interval: 5s
+    scrape_interval: 10s
     static_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'node_exporter'
+    scrape_interval: 10s
     static_configs:
       - targets: ['node_exporter:9100']
 EOL
 
 
-    run_command docker network create grafana_network
+	run_command docker network create grafana_network
 	
-    run_command docker volume create prometheus_data
-    run_command docker run -d -p 9090:9090 --hostname=prometheus --name=prometheus --network=grafana_network --restart=unless-stopped \
+	run_command docker volume create prometheus_data
+    run_command docker run -d --hostname=prometheus --name=g_prometheus --network=grafana_network --restart=unless-stopped \
+        -p 9090:9090 \
         -v /etc/prometheus:/etc/prometheus \
         -v prometheus_data:/prometheus \
         prom/prometheus:latest
 
 	run_command docker volume create grafana_data
-    run_command docker run -d -p 3000:3000 --hostname=grafana --name=grafana --network=grafana_network --restart=unless-stopped \
-        -v grafana-data:/var/lib/grafana \
+    run_command docker run -d --hostname=grafana --name=g_grafana --network=grafana_network --restart=unless-stopped \
+        -p 3000:3000 \
+        -v grafana_data:/var/lib/grafana \
         grafana/grafana:latest
-
-    run_command docker run -d -p 9100:9100  --hostname=node_exporter --name=node_exporter --network=grafana_network --restart=unless-stopped \
-        --pid=host \
+		
+    run_command docker run -d --hostname=node_exporter --name=g_node_exporter --network=grafana_network --restart=unless-stopped \
+		--pid=host \
         -v /:/host:ro,rslave \
         quay.io/prometheus/node-exporter:v1.5.0 --path.rootfs=/host
 
     clear
     displaydocker
     echo
-    echo " >> Install Grafana... <<"
+    print_colored_section_header "Install Grafana-Fritzbox..."
     echo 
     read -p "Would you like to install the fritzbox-prometheus-exporter as well? (Y/N): " install_fritzbox_exporter
 
     if [ "$install_fritzbox_exporter" == "y" ]; then
         read -p "Enter the IP address of your Fritzbox: " fb_exporter_gateway_url
-        read -p "Enter the fritzbox user name (USERNAME) for fritzbox-prometheus-exporter ein: " fb_exporter_username
-        read -p "Enter the fritzbox password (PASSWORD) for fritzbox-prometheus-exporter ein: " fb_exporter_passwort
+        read -p "Enter the fritzbox user name (USERNAME) for fritzbox-prometheus-exporter: " fb_exporter_username
+        read -p "Enter the fritzbox password (PASSWORD) for fritzbox-prometheus-exporter: " fb_exporter_passwort
         echo
-        run_command docker volume create fritzbox-prometheus-exporter_data
-        run_command docker run -d -p 9042:9042 --hostname=fritzbox_exporter --name=fritzbox_exporter --network=grafana_network --restart=unless-stopped \
+        run_command docker run -d --hostname=fritzbox_exporter --name=g_fritzbox_exporter --network=grafana_network --restart=unless-stopped \
+            -p 9042:9042 \
             -e USERNAME=$fb_exporter_username \
             -e PASSWORD=$fb_exporter_password \
             -e GATEWAY_URL=http://$fb_exporter_gateway_url:49000 \
@@ -377,40 +392,40 @@ EOL
     clear
     displaydocker
     echo
-    echo -e "   Grafana can now be reached at the following address > \e[32mhttp://$(get_ip_address):3000\e[0m"
-    echo -e "   Node-Exporter can now be reached at the following address > \e[32mhttp://$(get_ip_address):9090\e[0m"
+    echo -e "   Grafana can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):3000\e[0m"
     echo
-    read -p "Press Enter to return to the menu."
+    echo -e "   Node-Exporter can now be reached at the following address >" 
+    echo -e "   \e[32mhttp://$(get_ip_address):9090\e[0m"
+    echo
+    read -p "   Press Enter to return to the menu."
 }
 
-install_iventoy(){
+install_npm() {
+
     clear
     displaydocker
     echo
-    echo " >> Install iVentoy... <<"
-    echo 
-
-    local_network=$(echo $(get_ip_address) | cut -d"." -f1,2,3)".0"
-
-    ufw allow from $local_network/24 to any port 67
-    ufw allow from $local_network/24 to any port 68
-    ufw allow from $local_network/24 to any port 69
-    ufw allow from $local_network/24 to any port 26000
-    ufw allow from $local_network/24 to any port 16000  
-    ufw allow from $local_network/24 to any port 10809
-    run_command docker run -d --hostname=iventoy --name=iventoy --restart=always \
-        --privileged \
-        --network=host \
-        -v /home/iventoy/iso:/app/iso \
-        -v /home/iventoy/log:/app/log \
-        -v /home/iventoy/user:/app/user \
-        ziggyds/iventoy:latest
-    clear
+    print_colored_section_header "Install Nginx-Proxy-Manager"
+    run_command docker network create npm_network
+    run_command docker volume create npm_data
+    run_command docker run -d --hostname=npm --name=nginx-proxy-manager --network=npm_network --restart=always \
+        -v /npm_data/data:/data \
+        -v /npm_data/letsencrypt:/etc/letsencrypt \
+        -p 80:80 \
+        -p 443:443 \
+        -p 81:81 \
+        -e TZ=Europe/Berlin \
+        jc21/nginx-proxy-manager:latest
+        clear
     displaydocker
     echo
-    echo -e "   iVentoy can now be reached at the following address > \e[32mhttp://$(get_ip_address):26000\e[0m"
+    echo -e "   Nginx Proxy Manager can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):81\e[0m"
     echo
-    read -p "Press Enter to return to the menu."        
+    echo -e "   Default email: \e[32madmin@example.com \033[0m| Default password: \e[32mchangeme\e[0m"
+    echo
+    read -p "   Press Enter to return to the menu."    
 }
 
 install_heimdall() {
@@ -418,19 +433,19 @@ install_heimdall() {
     clear
     displaydocker
     echo
-    echo " >> Install Heimdall... <<"
-    echo 
+    print_colored_section_header "Install Heimdall"
     run_command docker volume create heimdall_data
     run_command docker run -d --hostname=heimdall --name=heimdall --restart=always \
-        -v /heimdall_data:/config \
+        -v /heimdall_data/config:/app/config \
         -p 8080:80 \
         linuxserver/heimdall:latest
-    clear
+        clear
     displaydocker
     echo
-    echo -e "   heimdall can now be reached at the following address > \e[32mhttp://$(get_ip_address):8080\e[0m"
+    echo -e "   Heimdall can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):8080\e[0m"
     echo
-    read -p "Press Enter to return to the menu."    
+    read -p "   Press Enter to return to the menu."    
 }
 
 ################################################################################################################
@@ -441,26 +456,25 @@ while true; do
     displaydocker
     # Process menu options
     echo
-    echo -e "\e[1;33m   [1] Updating the system\e[0m     [Perform system update]"
+    echo -e "\e[1;33m   [\033[1;36m1\e[1;33m] Perform system update\e[0m     [Update the system]"
     echo
-    echo -e "\e[1;33m   [2] Install Docker\e[0m          [Install Docker and Docker-Compose]"
+    echo -e "\e[1;33m   [\033[1;36m2\e[1;33m] Install Docker\e[0m            [Install Docker and Docker-Compose]"
     echo
-    echo -e "\e[1;33m   [3] Install Applications\e[0m    [Must have Docker-Apps]"
+    echo -e "\e[1;33m   [\033[1;36m3\e[1;33m] Install Applications\e[0m      [Install Docker-Apps]"
     echo
     echo
-    echo -e "\e[1;33m   [4] Quit\e[0m"
     echo
-    echo "=========================================================================="
+    echo "============================================================================="
     echo
     # Query user input
-    read -p "   Please select an option (1-4): " choice
+    read -p "   Please select an option (1-3) or Quit (Q): " choice
 
     # Process menu options
     case $choice in
-        1) sys_update ; read -p "Press Enter to return to the main menu." ;;
-        2) docker_setup ; read -p "Press Enter to return to the main menu." ;;
+        1) sys_update ; read -p "   Press Enter to return to the main menu." ;;
+        2) docker_setup ; read -p "   Press Enter to return to the main menu." ;;
         3) app_menu ;;
-        4)
+        Q|q)
             clear
             exit
             ;;
