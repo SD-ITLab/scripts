@@ -329,7 +329,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'node_exporter'
+  - job_name: 'Localhost'
     scrape_interval: 10s
     static_configs:
       - targets: ['node_exporter:9100']
@@ -382,7 +382,7 @@ cat <<EOL >> /etc/prometheus/prometheus.yml
 
   - job_name: 'fritzbox_exporter'
     static_configs:
-      - targets: ['$fritzbox_exporter_ip:9042']
+      - targets: ['g_fritzbox_exporter:9042']
 EOL
         run_command docker restart prometheus
     else
