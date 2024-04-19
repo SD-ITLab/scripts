@@ -10,6 +10,15 @@ DNS_SERVER="10.16.1.253"
 INTERFACE_NAME="enp0s3"
 
 # Benutzereingabe für Raumnummer und PC-Nummer
+display() {
+echo "####################################"
+echo "     Virtualbox - Network Setup"
+echo "####################################"
+echo
+}
+
+clear
+display
 read -p "Geben Sie die Raumnummer ein: " RAUM_NUMMER
 read -p "Geben Sie die PC-Nummer ein: " PC_NUMMER
 
@@ -53,4 +62,7 @@ fi
 # Netzwerkschnittstelle neu starten
 systemctl restart networking
 
+
+clear
+display
 echo "Statische Netzwerkkonfiguration für IPv4 wurde aktualisiert. Backups erstellt: /etc/network/interfaces_$CURRENT_DATE.backup und /etc/resolv.conf_$CURRENT_DATE.backup"
