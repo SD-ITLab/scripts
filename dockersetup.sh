@@ -436,7 +436,7 @@ install_heimdall() {
     print_colored_section_header "Install Heimdall"
     run_command docker volume create heimdall_data
     run_command docker run -d --hostname=heimdall --name=heimdall --restart=always \
-        -v /heimdall_data/config:/app/config \
+        -v heimdall_data/config:/app/config \
         -p 8080:80 \
         linuxserver/heimdall:latest
         clear
