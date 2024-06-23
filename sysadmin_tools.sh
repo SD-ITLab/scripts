@@ -563,10 +563,6 @@ crowdsec_menu() {
     # Allow incoming connections on the new SSH port
     run_command ufw allow $new_port2
     run_command ufw allow 8081
-    # Check if the host is a Proxmox host
-    if dpkg -l | grep -q pve-manager; then
-        run_command ufw allow 8006
-    fi
     run_command apt-get install curl -y
     run_command curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash
     run_command apt-get install crowdsec -y
@@ -595,8 +591,12 @@ crowdsec_menu() {
 
 
     # Crowdsec-Bouncer-installation
-    run_command apt-get install crowdsec-firewall-bouncer-iptables -y
-
+    if dpkg -l | grep -q pve-manager; then
+        run_command ufw allow 8006
+        run_command apt-get install crowdsec-firewall-bouncer -y
+    else
+        run_command apt-get install crowdsec-firewall-bouncer-iptables -y
+    fi
     # Crowdsec-Firewall-Bouncer-Iptables-configuration
     firewall_bouncer_config="/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
 
