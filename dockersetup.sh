@@ -183,7 +183,7 @@ app_menu() {
         echo -e "\e[1;33m   [\033[1;36m4\e[1;33m] Watchtower\e[0m             [Automatic updating of docker containers]"
         echo -e "\e[1;33m   [\033[1;36m5\e[1;33m] Grafana_Stack\e[0m          [Data visualization]"
         echo -e "\e[1;33m   [\033[1;36m6\e[1;33m] Nginx-Proxy-Manager\e[0m    [Reverse proxy with LetsEncrypt]"
-        echo -e "\e[1;33m   [\033[1;36m7\e[1;33m] Heimdall\e[0m               [Dashboards for Favorites]"
+        echo -e "\e[1;33m   [\033[1;36m7\e[1;33m] Homarr\e[0m                 [Dashboards for Favorites]"
         echo
         echo "============================================================================="
         echo
@@ -199,7 +199,7 @@ app_menu() {
             4) install_watchtower ;;
             5) install_grafana_stack ;;
             6) install_npm ;;
-            7) install_heimdall ;;
+            7) install_homarr ;;
             Q|q) return ;;
             *) echo "Invalid option. Please select again." ;;
         esac
@@ -410,8 +410,8 @@ install_npm() {
     run_command docker network create npm_network
     run_command docker volume create npm_data
     run_command docker run -d --hostname=npm --name=nginx-proxy-manager --network=npm_network --restart=always \
-        -v /npm_data/data:/data \
-        -v /npm_data/letsencrypt:/etc/letsencrypt \
+        -v npm_data/data:/data \
+        -v npm_data/letsencrypt:/etc/letsencrypt \
         -p 80:80 \
         -p 443:443 \
         -p 81:81 \
@@ -428,22 +428,25 @@ install_npm() {
     read -p "   Press Enter to return to the menu."    
 }
 
-install_heimdall() {
+install_homarr() {
 
     clear
     displaydocker
     echo
-    print_colored_section_header "Install Heimdall"
-    run_command docker volume create heimdall_data
-    run_command docker run -d --hostname=heimdall --name=heimdall --restart=always \
-        -v heimdall_data/config:/app/config \
-        -p 8080:80 \
+    print_colored_section_header "Install homarr"
+    run_command docker volume create homarr_data
+    run_command docker run -d --hostname=homarr --name=homarr --restart=always \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v homarr_data:/app/data/configs \
+        -v homarr_data:/app/public/icons \
+        -v homarr_data:/data \
+        -p 7575:7575 \
         linuxserver/heimdall:latest
         clear
     displaydocker
     echo
-    echo -e "   Heimdall can now be reached at the following address >"
-    echo -e "   \e[32mhttp://$(get_ip_address):8080\e[0m"
+    echo -e "   homarr can now be reached at the following address >"
+    echo -e "   \e[32mhttp://$(get_ip_address):7575\e[0m"
     echo
     read -p "   Press Enter to return to the menu."    
 }
