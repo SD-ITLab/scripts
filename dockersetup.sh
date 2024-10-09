@@ -242,6 +242,7 @@ install_adguard_home() {
     print_colored_section_header "Install Adguard Home..."
     run_command docker volume create adguardhome_data
     run_command docker run -d --hostname=adguardhome --name=adguardhome --restart=always \
+        -v /var/run/docker.sock:/var/run/docker.sock \
         -v adguardhome_data:/opt/adguardhome/conf \
         -v adguardhome_data:/opt/adguardhome/work \
         -p 53:53/tcp \
@@ -268,6 +269,7 @@ install_uptime_kuma() {
     print_colored_section_header "Install Uptime Kuma..."
     run_command docker volume create uptimekuma_data
     run_command docker run -d --hostname=uptimekuma --name=uptimekuma --restart=always \
+    	-v /var/run/docker.sock:/var/run/docker.sock \
         -v uptimekuma_data:/app/data \
         -p 3001:3001 \
         louislam/uptime-kuma:latest
@@ -434,11 +436,13 @@ install_homarr() {
     displaydocker
     echo
     print_colored_section_header "Install homarr"
+    run_command docker volume create homarr_configs
+    run_command docker volume create homarr_icons
     run_command docker volume create homarr_data
     run_command docker run -d --hostname=homarr --name=homarr --restart=always \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        -v homarr_data:/app/data/configs \
-        -v homarr_data:/app/public/icons \
+        -v homarr_configs:/app/data/configs \
+        -v homarr_icons:/app/public/icons \
         -v homarr_data:/data \
         -p 7575:7575 \
         linuxserver/heimdall:latest
