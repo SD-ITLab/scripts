@@ -363,7 +363,7 @@ user_key_menu() {
 
         if user_exists "$ssh_user"; then
         run_command mkdir -p "$ssh_dir"
-        run_command ssh-keygen -t rsa -b 4096 -f "$ssh_dir/id_rsa"
+        run_command ssh-keygen -t ed25519 -C "$ssh_user"
         run_command mv "$ssh_dir/id_rsa.pub" "$ssh_dir/authorized_keys"
             clear
             displayuser
@@ -371,7 +371,7 @@ user_key_menu() {
             echo "                      Private key of > "$ssh_user" <"
             echo "=========================================================================="
             echo
-            run_command cat "$ssh_dir/id_rsa"
+            run_command cat "$ssh_dir/ed25519"
             echo
             echo
             read -p "Press Enter to return to the menu."
