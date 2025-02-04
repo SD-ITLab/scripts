@@ -1,4 +1,4 @@
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://badgen.net/github/license/SD-ITLab/Scripts)
 
 # SD-ITLab Linux Script Libary
 
